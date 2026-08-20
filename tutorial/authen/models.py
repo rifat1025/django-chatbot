@@ -1,8 +1,15 @@
 from django.db import models
-
+# this is the user table
+from django.db import models
+from django.contrib.auth.hashers import make_password
 
 class User(models.Model):
     name = models.CharField(max_length=100)
     email = models.EmailField()
-    password = models.CharField(max_length=128, null=True, blank=True)
-    c_password = models.CharField(max_length=128, null=True, blank=True)
+    password = models.CharField(max_length=128)
+    
+
+    def save(self, *args, **kwargs):
+        if not self.password.startswith("pbkdf2_"):
+            self.password = make_password(self.password)
+        super().save(*args, **kwargs)
