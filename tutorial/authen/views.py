@@ -5,6 +5,7 @@ from .models import User
 from .serializers import UserSerializer
 from rest_framework import status
 from rest_framework.views import APIView
+from django.contrib.auth.hashers import check_password
 
 # for test my apps
 def hello(request):
@@ -53,6 +54,53 @@ class User_lists(APIView):
             serializer.errors,
             status=status.HTTP_400_BAD_REQUEST
             )
+
+
+# Login endpoint
+
+class Login(APIView):
+
+    def post(self, request):
+        email = request.data.get("email")
+        password = request.data.get("password")
+
+        if not email or not password:
+            return Response(
+                {"error": "Email and password are required"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response(
+                {"error": "Invalid email or password"},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+        except User.MultipleObjectsReturned:
+            return Response(
+                {"error": "Multiple users have this email"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if not check_password(password, user.password):
+            return Response(
+                {"error": "Invalid email or password"},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+
+        return Response(
+            {
+                "message": "Login successful",
+                "user": {
+                    "id": user.id,
+                    "name": user.name,
+                    "email": user.email
+                }
+            },
+            status=status.HTTP_200_OK
+        )
+
 
 
 
