@@ -15,6 +15,7 @@ class KnowledgeDocument(models.Model):
         return self.title
 
 
+# Coversation Headline 
 class Conversation(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='conversations')
     title = models.CharField(max_length=255, default='New Conversation')
@@ -24,6 +25,7 @@ class Conversation(models.Model):
         return f"{self.user.username} — {self.title}"
 
 
+# Message option conversation btn user and aiAssistant
 class Message(models.Model):
     ROLE_CHOICES = (('user', 'User'), ('assistant', 'Assistant'))
 
