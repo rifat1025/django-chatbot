@@ -25,7 +25,7 @@ parser = JsonOutputParser(pydantic_object=ProductDetails)
 # ৪. Groq LLM ইনিশিয়ালাইজ করা
 llm = ChatGroq(
     groq_api_key=api_key,
-    model_name="llama-3.3-70b-versatile",  # অথবা "llama-3.1-8b-instant"
+    model_name="openai/gpt-oss-120b",  # অথবা "llama-3.1-8b-instant"
     temperature=0,
 )
 
