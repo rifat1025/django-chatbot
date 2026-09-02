@@ -1,21 +1,23 @@
 import os
 from django.conf import settings
 from langchain_groq import ChatGroq
-from langchain_openai import OpenAIEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 from dotenv import load_dotenv
-import os
 from langchain_community.vectorstores import Chroma
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import PyPDFLoader
-from langchain.schema import Document as LangchainDocument
+from langchain_core.documents import Document
 
 load_dotenv()
 
 api_key = os.environ.get("GROQ_API_KEY")
 
+#  using huggingface small embedding
+EMBEDDINGS = HuggingFaceEmbeddings(
+    model_name="BAAI/bge-small-en-v1.5"
+)
 
-EMBEDDINGS = OpenAIEmbeddings(openai_api_key=settings.OPENAI_API_KEY)
-
+# using CHROMa vectore database for store embedding
 
 def get_vectorstore():
     return Chroma(
@@ -24,11 +26,12 @@ def get_vectorstore():
     )
 
 
+
 def ingest_text(text: str, metadata: dict) -> int:
     """Split text into chunks, embed, and store. Returns chunk count."""
     splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=150)
     chunks = splitter.split_text(text)
-    docs = [LangchainDocument(page_content=chunk, metadata=metadata) for chunk in chunks]
+    docs = [Document(page_content=chunk, metadata=metadata) for chunk in chunks]
 
     vectorstore = get_vectorstore()
     vectorstore.add_documents(docs)
