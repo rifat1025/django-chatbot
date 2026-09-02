@@ -1,10 +1,18 @@
 import os
 from django.conf import settings
-from langchain_openai import OpenAIEmbeddings, ChatOpenAI
+from langchain_groq import ChatGroq
+from langchain_openai import OpenAIEmbeddings
+from dotenv import load_dotenv
+import os
 from langchain_community.vectorstores import Chroma
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import PyPDFLoader
 from langchain.schema import Document as LangchainDocument
+
+load_dotenv()
+
+api_key = os.environ.get("GROQ_API_KEY")
+
 
 EMBEDDINGS = OpenAIEmbeddings(openai_api_key=settings.OPENAI_API_KEY)
 
@@ -57,7 +65,9 @@ def answer_query(query: str, user_id: int, k: int = 4) -> dict:
         }
 
     context = "\n\n".join(doc.page_content for doc in relevant_docs)
-    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0, openai_api_key=settings.OPENAI_API_KEY)
+    llm = ChatGroq(model="openai/gpt-oss-120b",
+                   temperature=0,
+                    groq_api_key=api_key)
 
     prompt = f"""Answer the question using ONLY the context below. If the answer isn't in the context, say so.
 
