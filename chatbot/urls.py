@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import Chatbot 
-
+from .views import DocumentUploadAPIView
 urlpatterns = [
-    path('/',views.Chatbot)
+    path('documents/', DocumentUploadAPIView.as_view(), name='document-upload'),
+    
 ]

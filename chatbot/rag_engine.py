@@ -12,12 +12,14 @@ load_dotenv()
 
 api_key = os.environ.get("GROQ_API_KEY")
 
+
 #  using huggingface small embedding
 EMBEDDINGS = HuggingFaceEmbeddings(
     model_name="BAAI/bge-small-en-v1.5"
 )
 
 # using CHROMa vectore database for store embedding
+
 
 def get_vectorstore():
     return Chroma(
