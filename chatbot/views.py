@@ -38,3 +38,41 @@ class DocumentUploadAPIView(APIView):
     def get(self, request):
         docs = KnowledgeDocument.objects.filter(uploaded_by=request.user).order_by('-created_at')
         return Response(KnowledgeDocumentSerializer(docs, many=True).data)
+
+
+
+class ChatAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        serializer = ChatRequestSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user_message = serializer.validated_data['message']
+        conv_id = serializer.validated_data.get('conversation_id')
+
+        if conv_id:
+            conversation = Conversation.objects.filter(id=conv_id, user=request.user).first()
+            if not conversation:
+                return Response({"error": "Conversation not found."}, status=status.HTTP_404_NOT_FOUND)
+        else:
+            conversation = Conversation.objects.create(
+                user=request.user,
+                title=user_message[:50]
+            )
+
+        Message.objects.create(conversation=conversation, role='user', content=user_message)
+
+        result = answer_query(user_message, user_id=request.user.id)
+
+        assistant_msg = Message.objects.create(
+            conversation=conversation,
+            role='assistant',
+            content=result['answer'],
+            sources=result['sources'],
+        )
+
+        return Response({
+            "conversation_id": conversation.id,
+            "answer": assistant_msg.content,
+            "sources": assistant_msg.sources,
+        }, status=status.HTTP_200_OK)
