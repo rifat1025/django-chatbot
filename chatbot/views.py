@@ -76,3 +76,11 @@ class ChatAPIView(APIView):
             "answer": assistant_msg.content,
             "sources": assistant_msg.sources,
         }, status=status.HTTP_200_OK)
+
+
+class ConversationListAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        conversations = Conversation.objects.filter(user=request.user).order_by('-created_at')
+        return Response(ConversationSerializer(conversations, many=True).data)
