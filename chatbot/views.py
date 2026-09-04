@@ -84,3 +84,21 @@ class ConversationListAPIView(APIView):
     def get(self, request):
         conversations = Conversation.objects.filter(user=request.user).order_by('-created_at')
         return Response(ConversationSerializer(conversations, many=True).data)
+
+
+
+class ConversationDetailAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, pk):
+        conversation = Conversation.objects.filter(id=pk, user=request.user).first()
+        if not conversation:
+            return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+        return Response(ConversationSerializer(conversation).data)
+
+    def delete(self, request, pk):
+        conversation = Conversation.objects.filter(id=pk, user=request.user).first()
+        if not conversation:
+            return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+        conversation.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
