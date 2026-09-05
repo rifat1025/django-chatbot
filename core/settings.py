@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'accounts',
     'rest_framework_simplejwt.token_blacklist',
     'chatbot',
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [
@@ -163,3 +164,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 CHROMA_PERSIST_DIR = BASE_DIR / "chroma_db"
+
+
+DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='noreply@example.com')
+FRONTEND_URL = env('FRONTEND_URL', default='http://localhost:3000')

@@ -3,7 +3,8 @@ from rest_framework import status, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
-
+from .emails import send_verification_email
+from .utils import verify_token
 from .serializers import RegisterSerializer, LoginSerializer, ProfileSerializer
 
 from .models import Profile
