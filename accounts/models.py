@@ -6,6 +6,7 @@ class Profile(models.Model):
     bio = models.TextField(blank=True)
     avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
     phone = models.CharField(max_length=20, blank=True)
+    is_verified = models.BooleanField(default=False)  # new
 
     def __str__(self):
         return self.user.username
